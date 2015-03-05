@@ -12,11 +12,11 @@ namespace Coach_Display
     public partial class Form3 : Form
     {
 
-        public static double keyPoint = 3;
+        public static float keyPoint = 3;
         public static int timePast = 20;
         public static int timeForward = 80;
         //public static double zeroSignal = 0;
-        public static double initTime = 5; // время осреднения ускорения для расчета нулевого значения
+        public static float initTime = 5; // время осреднения ускорения для расчета нулевого значения
         public static Form1.portState PORT_MODE = Form1.portState.First;
 
         public Form3()
@@ -36,11 +36,34 @@ namespace Coach_Display
         {
             try
             {
-                keyPoint = Convert.ToDouble(textBox1.Text.Replace('.', ','));
+                keyPoint = Convert.ToSingle(textBox1.Text.Replace('.', ','));
                 timePast = Convert.ToInt32(textBox2.Text.Replace('.', ','));
-                initTime = Convert.ToDouble(textBox4.Text.Replace('.', ','));
-                timePast = Convert.ToInt32(textBox5.Text.Replace('.', ','));
+                initTime = Convert.ToSingle(textBox4.Text.Replace('.', ','));
+                timeForward = Convert.ToInt32(textBox5.Text.Replace('.', ','));
                 PORT_MODE = (Form1.portState) comboBox1.SelectedItem;
+                Coach_Display.Properties.Settings.Default.KeyPoint = keyPoint;
+                Coach_Display.Properties.Settings.Default.timePast = timePast;
+                Coach_Display.Properties.Settings.Default.timeForward = timeForward;
+                Coach_Display.Properties.Settings.Default.initTime = initTime;
+                switch (PORT_MODE)
+                {
+                    case Form1.portState.None:
+                        Coach_Display.Properties.Settings.Default.mode = 0;
+                        break;
+                    case Form1.portState.First:
+                        Coach_Display.Properties.Settings.Default.mode = 1;
+                        break;
+                    case Form1.portState.Second:
+                        Coach_Display.Properties.Settings.Default.mode = 2;
+                        break;
+                    case Form1.portState.Both:
+                        Coach_Display.Properties.Settings.Default.mode = 3;
+                        break;
+                    default:
+                        Coach_Display.Properties.Settings.Default.mode = 0;
+                        break;
+                }
+                Coach_Display.Properties.Settings.Default.Save();
                 //Form1.true_zero_set = Convert.ToDouble(textBox3.Text.Replace('.', ','));
             }
             catch (Exception)
