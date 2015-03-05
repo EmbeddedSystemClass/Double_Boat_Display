@@ -1,0 +1,119 @@
+D:\Projects\Coach_Display\bin\Debug\Coach_Display.exe
+D:\Projects\Coach_Display\bin\Debug\Coach_Display.pdb
+D:\Projects\Coach_Display\obj\x86\Debug\Coach_Display.Form1.resources
+D:\Projects\Coach_Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+D:\Projects\Coach_Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+D:\Projects\Coach_Display\obj\x86\Debug\Coach_Display.exe
+D:\Projects\Coach_Display\obj\x86\Debug\Coach_Display.pdb
+D:\Projects\Coach_Display\bin\Debug\ZedGraph.dll
+E:\Coach_Display\obj\x86\Debug\Coach_Display.exe
+E:\Coach_Display\obj\x86\Debug\Coach_Display.pdb
+E:\Coach_Display\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Coach_Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Coach_Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display\bin\Debug\Coach_Display.exe
+E:\Coach_Display\bin\Debug\Coach_Display.pdb
+E:\Coach_Display\bin\Debug\ZedGraph.dll
+E:\Coach_Display\bin\Debug\ru\ZedGraph.resources.dll
+E:\Coach_Display\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Coach_Display\obj\x86\Debug\Coach_Display.exe
+L:\Coach_Display\obj\x86\Debug\Coach_Display.pdb
+L:\Coach_Display\bin\Debug\Coach_Display.exe
+L:\Coach_Display\bin\Debug\Coach_Display.pdb
+L:\Coach_Display\bin\Debug\ZedGraph.dll
+L:\Coach_Display\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Coach_Display\obj\x86\Debug\Coach_Display.Form1.resources
+L:\Coach_Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+L:\Coach_Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.exe
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.pdb
+E:\Coach_Display_graph\bin\Debug\Coach_Display.exe
+E:\Coach_Display_graph\bin\Debug\ZedGraph.dll
+E:\Coach_Display_graph\bin\Debug\ru\ZedGraph.resources.dll
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display_graph\bin\Debug\Coach_Display.pdb
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.exe
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.pdb
+L:\Coach_Display_graph\bin\Debug\Coach_Display.exe
+L:\Coach_Display_graph\bin\Debug\Coach_Display.pdb
+L:\Coach_Display_graph\bin\Debug\ZedGraph.dll
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form1.resources
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form2.resources
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form2.resources
+E:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form3.resources
+L:\Coach_Display_graph\obj\x86\Debug\Coach_Display.Form3.resources
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.exe
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.pdb
+L:\Coach_Display_duo\bin\Debug\Coach_Display.exe
+L:\Coach_Display_duo\bin\Debug\Coach_Display.pdb
+L:\Coach_Display_duo\bin\Debug\ZedGraph.dll
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form1.resources
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form2.resources
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form3.resources
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+L:\Coach_Display_duo\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.exe
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.pdb
+E:\Coach_Display_duo\bin\Debug\Coach_Display.exe
+E:\Coach_Display_duo\bin\Debug\ZedGraph.dll
+E:\Coach_Display_duo\bin\Debug\ru\ZedGraph.resources.dll
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form2.resources
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Form3.resources
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Coach_Display_duo\bin\Debug\Coach_Display.pdb
+E:\Coach_Display_duo\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.exe
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.pdb
+E:\Coach_Display_duo_new\bin\Debug\Coach_Display.exe
+E:\Coach_Display_duo_new\bin\Debug\Coach_Display.pdb
+E:\Coach_Display_duo_new\bin\Debug\ZedGraph.dll
+E:\Coach_Display_duo_new\bin\Debug\ru\ZedGraph.resources.dll
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.Form2.resources
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.Form3.resources
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Coach_Display_duo_new\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.exe
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.pdb
+E:\Double Boat Display\bin\Debug\Coach_Display.exe
+E:\Double Boat Display\bin\Debug\Coach_Display.pdb
+E:\Double Boat Display\bin\Debug\ZedGraph.dll
+E:\Double Boat Display\bin\Debug\ru\ZedGraph.resources.dll
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.Form2.resources
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.Form3.resources
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Double Boat Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.exe
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.pdb
+L:\Double Boat Display\bin\Debug\Coach_Display.exe
+L:\Double Boat Display\bin\Debug\Coach_Display.pdb
+L:\Double Boat Display\bin\Debug\ZedGraph.dll
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.Form1.resources
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.Form2.resources
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.Form3.resources
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+L:\Double Boat Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.exe
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.pdb
+D:\Projects\Double_Boat_Display\bin\Debug\Coach_Display.exe
+D:\Projects\Double_Boat_Display\bin\Debug\Coach_Display.pdb
+D:\Projects\Double_Boat_Display\bin\Debug\ZedGraph.dll
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Form1.resources
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Form2.resources
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Form3.resources
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
