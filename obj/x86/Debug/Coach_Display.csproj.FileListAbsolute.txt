@@ -106,6 +106,29 @@ L:\Double Boat Display\obj\x86\Debug\Coach_Display.Form2.resources
 L:\Double Boat Display\obj\x86\Debug\Coach_Display.Form3.resources
 L:\Double Boat Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
 L:\Double Boat Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.exe
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.pdb
+L:\Double Boat Display_old_sensor\bin\Debug\Coach_Display.exe
+L:\Double Boat Display_old_sensor\bin\Debug\Coach_Display.pdb
+L:\Double Boat Display_old_sensor\bin\Debug\ZedGraph.dll
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form1.resources
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form2.resources
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form3.resources
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+L:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.exe
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.pdb
+E:\Double Boat Display_old_sensor\bin\Debug\Coach_Display.exe
+E:\Double Boat Display_old_sensor\bin\Debug\Coach_Display.pdb
+E:\Double Boat Display_old_sensor\bin\Debug\ZedGraph.dll
+E:\Double Boat Display_old_sensor\bin\Debug\ru\ZedGraph.resources.dll
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.csprojResolveAssemblyReference.cache
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form1.resources
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form2.resources
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Form3.resources
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.Properties.Resources.resources
+E:\Double Boat Display_old_sensor\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
 D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.exe
 D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.pdb
 D:\Projects\Double_Boat_Display\bin\Debug\Coach_Display.exe

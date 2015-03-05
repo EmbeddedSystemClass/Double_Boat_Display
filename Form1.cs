@@ -18,8 +18,9 @@ namespace Coach_Display
 {
     public partial class Form1 : Form
     {
+        string build_version = "0.2 Old Sensor"; 
         //System.Drawing.Graphics graph; // используется для рисования
-        string build_version = "0.2 Master"; 
+        
 
         Form2 table = new Form2();
         public static volatile bool recStart = false; // индикатор заполнение таблицы (заполняется/не заполняется)
@@ -34,7 +35,7 @@ namespace Coach_Display
         SerialPort[] active_com = new SerialPort[2];
         public enum portState {None, First, Second, Both}; // режимы работы: без датчика, первый датчик, второй датчик, два датчика
         Queue<float>[] rawAcceleration = new Queue<float>[2];  // очереди ускорений 
-        static portState PORT_MODE = portState.First; // выбор режима работы с датчиками
+        static portState PORT_MODE = portState.Second; // выбор режима работы с датчиками
         static string[] comNames = new string[2];
         Thread[] firstStage = new Thread[2]; // чтение с СОМ порта, отображение первичных данных и пополнение очередей ускорений
         Thread[] secondStage = new Thread[2]; // чтение очередей ускорений, расчет и отображение дополнительных параметров
@@ -65,7 +66,6 @@ namespace Coach_Display
         {
             InitializeComponent();
             this.Text += " v" + build_version;
-
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -87,21 +87,21 @@ namespace Coach_Display
             System.Diagnostics.Stopwatch timer = new System.Diagnostics.Stopwatch();
             System.Diagnostics.Stopwatch tableTimer = new System.Diagnostics.Stopwatch();
             timer.Start();
-            int read_buffer = 59; // длина буффера для пакетов с дисплея
+            int read_buffer = 39; // длина буффера для пакетов с дисплея
             float speedNow = 0; // текущая скорость (значение из последнего принятого пакета) в м/с
             float[] recMass = new float[20];
             int recCount = 0;
-            
 
+            uint sinc = 0;
             int len = 0;
             byte[] buffer = new byte[read_buffer];
             byte mini_buffer = 0;
-            byte[] temp = new byte[2];
+            byte[] temp = new byte[4];
 
             float recDistance = 0;
             
             timer.Start();
-            float[] acceleration = new float[19];
+            float[] acceleration = new float[20];
             
             try
             {
@@ -110,27 +110,39 @@ namespace Coach_Display
                     if (active_com[index].BytesToRead > 0)
                     {
                         mini_buffer = (byte)active_com[index].ReadByte();
-                        if (mini_buffer == 10)
+                        if (mini_buffer == 16) // 0x10
                         {
                             mini_buffer = (byte)active_com[index].ReadByte();
-                            if (mini_buffer == 13)
+                            if (mini_buffer == 171) // 0xAB
                             {
-                                while (active_com[index].BytesToRead < 60)
+                                while (active_com[index].BytesToRead < read_buffer)
                                 {
                                 }
                                 buffer = new byte[read_buffer];
-                                len = active_com[index].Read(buffer, 0, 59);
+                                len = active_com[index].Read(buffer, 0, read_buffer);
 
-                                temp[0] = buffer[10]; temp[1] = buffer[11];
-                                speedNow = (float)BitConverter.ToInt16(temp, 0); // скорость в км/ч
+                                //temp[0] = buffer[10]; temp[1] = buffer[11];
+                                //speedNow = (float)BitConverter.ToInt16(temp, 0); // скорость в км/ч
 
-                                acceleration = new float[19];
-                                for (int i = 0; i < 38; i += 2)
-                                {
-                                    temp[0] = buffer[19 + i]; temp[1] = buffer[20 + i];
-                                    acceleration[i / 2] = (float)BitConverter.ToInt16(temp, 0) / (1000) * 9.8F; //ускорения
-                                    rawAcceleration[index].Enqueue(acceleration[i / 2]); //ускорения
-                                }
+                                acceleration = new float[20];
+                                //for (int i = 0; i < 1; i += 1)
+                                //{
+                                int i = 0;
+                                    if (buffer[read_buffer - 1] == 16)
+                                        i = 1;
+                                    temp[0] = buffer[24 + i]; temp[1] = buffer[25 + i]; temp[2] = buffer[26 + i]; temp[3] = buffer[27 + i];
+                                    acceleration[0] = BitConverter.ToSingle(temp,0) * 9.8F; //ускорения
+                                    rawAcceleration[index].Enqueue(acceleration[0]); //ускорения
+                                //}
+                                    temp[0] = buffer[28 + i]; temp[1] = buffer[29 + i]; temp[2] = buffer[30 + i]; temp[3] = buffer[31 + i];
+                                    acceleration[1] = BitConverter.ToSingle(temp, 0); //ускорения
+                                sinc = BitConverter.ToUInt32(buffer, 32 + i);
+                                speedBox[0].Invoke(new Action(() => speedBox[0].Text =
+                                         sinc.ToString()));
+                                speedBox[1].Invoke(new Action(() => speedBox[1].Text =
+                                        String.Format("{0,6:0.00}", acceleration[0])));
+                                tempBox[1].Invoke(new Action(() => tempBox[1].Text =
+                                        String.Format("{0,6:0.00}", acceleration[1])));
                                 // Искуственное введение скорости для тестирования без GPS
                                 //buffer[0] = (byte)DateTime.Now.Second;
                                 //label10.Invoke(new Action(() => label10.Text = (buffer[0] / 10F).ToString()));
@@ -254,24 +266,27 @@ namespace Coach_Display
                         if ((miniAcc.Count > 4))
                             miniAcc.RemoveAt(0);
                         dispAcc = rawAcceleration[index].Dequeue() - zeroSignal;
-                        if (dispAcc == zeroSignal)
-                            dispAcc = miniAcc[miniAcc.Count - 1];
+                        //if (dispAcc == zeroSignal)
+                        //    dispAcc = miniAcc[miniAcc.Count - 1];
+                        if ((Math.Abs(dispAcc) >= 20)||(Math.Abs(dispAcc) <= 0.01))
+                            dispAcc = 0;
+                        
                         miniAcc.Add(dispAcc);
                         if (baseTimer > 9000)
                         {
                             tempZeroSignal += dispAcc / 500F;
                             baseTimer++;
-                            Add_to_static_graph(time, dispAcc, index);
+                            //Add_to_static_graph(time, dispAcc, index);
                             time += 0.01F;
-                            if ((!pauseButton.Checked)&&(baseTimer % updateRate == 0))
-                            {
-                                redraw_graph();
-                            }
-                            if (baseTimer % 3000 == 0)
-                            {
-                                StaticCurve[index].Clear();
-                                time = 0;
-                            }
+                            //if ((!pauseButton.Checked)&&(baseTimer % updateRate == 0))
+                            //{
+                            //    redraw_graph();
+                            //}
+                            //if (baseTimer % 3000 == 0)
+                            //{
+                            //    StaticCurve[index].Clear();
+                            //    time = 0;
+                            //}
                             //if (baseTimer >= 9500)
                             //{
                             //    zedGraph.GraphPane.XAxis.Scale.Max = 2;
@@ -398,7 +413,7 @@ namespace Coach_Display
                 if (!(sd is ThreadAbortException))
                 {
                     MessageBox.Show("Произошла ошибка при обработке данных (Stage two)\n" + sd.Message + "\nQueue length " +
-                        rawAcceleration[index].Count + "\nCurrent acceleration " + dispAcc);
+                        rawAcceleration[index].Count + "\nCurrent acceleration " + dispAcc + "\n" + sd.ToString() + "\n" + Stroke_Graph[1].ToString());
                     Disconnect();
                     Thread.Sleep(50);
 
@@ -514,6 +529,7 @@ namespace Coach_Display
                 firstStage[0] = new Thread(stageOneThread);
                 firstStage[0].Start();
 
+                Thread.Sleep(500);
                 secondStage[0] = new Thread(stageTwoThread);
                 secondStage[0].Start();
             }
@@ -528,6 +544,7 @@ namespace Coach_Display
                 firstStage[1] = new Thread(stageOneThread);
                 firstStage[1].Start();
 
+                Thread.Sleep(500);
                 secondStage[1] = new Thread(stageTwoThread);
                 secondStage[1].Start();
             }
