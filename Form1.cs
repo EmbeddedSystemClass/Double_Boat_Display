@@ -18,7 +18,7 @@ namespace Coach_Display
 {
     public partial class Form1 : Form
     {
-        string build_version = "0.2 Old Sensor"; 
+        string build_version = "0.3 Old Sensor"; 
         //System.Drawing.Graphics graph; // используется для рисования
         
 
