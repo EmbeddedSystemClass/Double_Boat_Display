@@ -117,3 +117,4 @@ D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Form2.resources
 D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Form3.resources
 D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.Properties.Resources.resources
 D:\Projects\Double_Boat_Display\obj\x86\Debug\Coach_Display.csproj.GenerateResource.Cache
+D:\Projects\Double_Boat_Display\bin\Debug\Coach_Display.exe.config

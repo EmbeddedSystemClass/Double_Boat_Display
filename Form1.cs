@@ -19,7 +19,7 @@ namespace Coach_Display
     public partial class Form1 : Form
     {
         //System.Drawing.Graphics graph; // используется для рисования
-        string build_version = "0.2 Master"; 
+        string build_version = "0.3 Master"; 
 
         Form2 table = new Form2();
         public static volatile bool recStart = false; // индикатор заполнение таблицы (заполняется/не заполняется)
@@ -34,7 +34,7 @@ namespace Coach_Display
         SerialPort[] active_com = new SerialPort[2];
         public enum portState {None, First, Second, Both}; // режимы работы: без датчика, первый датчик, второй датчик, два датчика
         Queue<float>[] rawAcceleration = new Queue<float>[2];  // очереди ускорений 
-        static portState PORT_MODE = portState.First; // выбор режима работы с датчиками
+        //static portState PORT_MODE = portState.First; // выбор режима работы с датчиками
         static string[] comNames = new string[2];
         Thread[] firstStage = new Thread[2]; // чтение с СОМ порта, отображение первичных данных и пополнение очередей ускорений
         Thread[] secondStage = new Thread[2]; // чтение очередей ускорений, расчет и отображение дополнительных параметров
@@ -76,9 +76,33 @@ namespace Coach_Display
             speedIncrBox2[0] = textBox7; speedIncrBox2[1] = textBox8;
             baseTimeBox[0] = textBox9; baseTimeBox[1] = textBox10;
             baseMovementBox[0] = textBox11; baseMovementBox[1] = textBox12;
+            Form3.keyPoint = Coach_Display.Properties.Settings.Default.KeyPoint;
+            Form3.timePast = Coach_Display.Properties.Settings.Default.timePast;
+            Form3.timeForward = Coach_Display.Properties.Settings.Default.timeForward;
+            Form3.initTime = Coach_Display.Properties.Settings.Default.initTime;
+            switch (Coach_Display.Properties.Settings.Default.mode)
+            {
+                case 0:
+                    Form3.PORT_MODE = portState.None;
+                    break;
+                case 1:
+                    Form3.PORT_MODE = portState.First;
+                    break;
+                case 2:
+                    Form3.PORT_MODE = portState.Second;
+                    break;
+                case 3:
+                    Form3.PORT_MODE = portState.Both;
+                    break;
+                default:
+                    Form3.PORT_MODE = portState.None;
+                    break;
+            }
+            zedGraph_init(); // инициализация модуля графиков
+            // Важно инициализировать графики до запуска потоков взаимодействующих с ними
             com_search(); // найти и автоматически выбрать СОМ порты
             Connect(); // подключиться к выбранным СОМ портам и запустить потоки считывания и отображения
-            zedGraph_init(); // инициализация модуля графиков
+            
         }
 
         private void stageOneThread(object com)
@@ -226,13 +250,13 @@ namespace Coach_Display
             int index = THREAD_INDEX;
             List<float> miniAcc = new List<float>(); // используется для хранения +-2 значений относительно текущего
             List<float> oldAcc = new List<float>(); // используется для хранения -20 сглаженных значений
-            int oldLen = 5; // количество точек хранимых в памяти - количество точек влево от ключевой точки
-            int newLen = 180; // количество точек отображаемых на графике - количество точек вправо от ключевой точки
+            int oldLen = Form3.timePast; // количество точек хранимых в памяти - количество точек влево от ключевой точки
+            int newLen = Form3.timeForward; // количество точек отображаемых на графике - количество точек вправо от ключевой точки
             float calcAcc = 0; // текущее значение сглаженного ускорения для расчетов
             float dispAcc = 0; // текущее значение ускорения для отображения
             float zeroSignal = 0; // выставленный нуль
             float tempZeroSignal = 0; // используется для расчета нулевого сигнала
-            float keyPoint = -3; // ключевая точка относительно выставленного нуля
+            float keyPoint = Form3.keyPoint; // ключевая точка относительно выставленного нуля
             int accTimer = newLen + 1; // использутся для подсчета количества точек между событиями
             float time = 0; // ось Х на графике
             bool baseCounting = false; // индикатор подсчета времени опорной фазы
@@ -259,7 +283,7 @@ namespace Coach_Display
                         miniAcc.Add(dispAcc);
                         if (baseTimer > 9000)
                         {
-                            tempZeroSignal += dispAcc / 500F;
+                            tempZeroSignal += dispAcc / (Form3.initTime * 100F);
                             baseTimer++;
                             Add_to_static_graph(time, dispAcc, index);
                             time += 0.01F;
@@ -267,20 +291,20 @@ namespace Coach_Display
                             {
                                 redraw_graph();
                             }
-                            if (baseTimer % 3000 == 0)
-                            {
-                                StaticCurve[index].Clear();
-                                time = 0;
-                            }
-                            //if (baseTimer >= 9500)
+                            //if (baseTimer % 3000 == 0)
                             //{
-                            //    zedGraph.GraphPane.XAxis.Scale.Max = 2;
                             //    StaticCurve[index].Clear();
-                            //    baseTimer = 0;
                             //    time = 0;
-                            //    zeroSignal = tempZeroSignal;
-                            //    System.Media.SystemSounds.Asterisk.Play();
                             //}
+                            if (baseTimer >= 9000 + Form3.initTime * 100F)
+                            {
+                                zedGraph.GraphPane.XAxis.Scale.Max = 2;
+                                StaticCurve[index].Clear();
+                                baseTimer = 0;
+                                time = 0;
+                                zeroSignal = tempZeroSignal;
+                                System.Media.SystemSounds.Asterisk.Play();
+                            }
                         } // if (baseTimer > 9000)
                         else
                         {
@@ -428,11 +452,11 @@ namespace Coach_Display
 
 
             // условие (PORT_MODE != portState.Second) должно работать, но может не пройти в случае portState.None
-            if ((ports.Length != 0) && ((PORT_MODE == portState.First) || (PORT_MODE == portState.Both)))
+            if ((ports.Length != 0) && ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both)))
                 comNames[0] = ports[0];
-            if ((ports.Length > 1) && ((PORT_MODE == portState.Second) || (PORT_MODE == portState.Both)))
+            if ((ports.Length > 1) && ((Form3.PORT_MODE == portState.Second) || (Form3.PORT_MODE == portState.Both)))
                 comNames[1] = ports[1];
-            if ((PORT_MODE == portState.Second) && (ports.Length == 1))
+            if ((Form3.PORT_MODE == portState.Second) && (ports.Length == 1))
                 comNames[1] = ports[0];
             // Отмечает выбранные СОМ порты в меню
             for (int i = 0; i < port1Parameter.DropDownItems.Count; i++)
@@ -473,24 +497,24 @@ namespace Coach_Display
             active_com[0] = new SerialPort();
             active_com[1] = new SerialPort();
             
-            if ((port1Parameter.DropDownItems.Count != 0) && ((PORT_MODE == portState.First) || (PORT_MODE == portState.Both)))
+            if ((port1Parameter.DropDownItems.Count != 0) && ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both)))
             {
                 active_com[0] = new SerialPort(comNames[0], 115200, 0, 8, StopBits.One);
                 active_com[0].WriteBufferSize = 512;
                 active_com[0].ReadBufferSize = 8192;
             }
-            if ((port2Parameter.DropDownItems.Count != 0) && ((PORT_MODE == portState.Second) || (PORT_MODE == portState.Both)))
+            if ((port2Parameter.DropDownItems.Count != 0) && ((Form3.PORT_MODE == portState.Second) || (Form3.PORT_MODE == portState.Both)))
             {
                 active_com[1] = new SerialPort(comNames[1], 115200, 0, 8, StopBits.One);
                 active_com[1].WriteBufferSize = 512;
                 active_com[1].ReadBufferSize = 8192;
             }
-            if (PORT_MODE != portState.None)
+            if (Form3.PORT_MODE != portState.None)
                 try
                 {
-                    if ((PORT_MODE == portState.First) || (PORT_MODE == portState.Both))
+                    if ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both))
                         active_com[0].Open();
-                    if ((PORT_MODE == portState.Second) || (PORT_MODE == portState.Both))
+                    if ((Form3.PORT_MODE == portState.Second) || (Form3.PORT_MODE == portState.Both))
                         active_com[1].Open();
                 }
                 catch (Exception)
@@ -504,7 +528,7 @@ namespace Coach_Display
                 richTextBox1.ForeColor = Color.Black;
                 return false;
             }
-            if ((PORT_MODE == portState.First) || (PORT_MODE == portState.Both))
+            if ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both))
             {
                 THREAD_INDEX = 0;
                 richTextBox1.ForeColor = Color.Green;
@@ -518,7 +542,7 @@ namespace Coach_Display
                 secondStage[0].Start();
             }
             Thread.Sleep(50);
-            if ((PORT_MODE == portState.Second) || (PORT_MODE == portState.Both))
+            if ((Form3.PORT_MODE == portState.Second) || (Form3.PORT_MODE == portState.Both))
             {
                 THREAD_INDEX = 1;
                 richTextBox1.ForeColor = Color.Green;
@@ -536,7 +560,7 @@ namespace Coach_Display
 
         private void Disconnect()
         {
-            if ((PORT_MODE == portState.First) || (PORT_MODE == portState.Both))
+            if ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both))
             {
                 if (secondStage[0].IsAlive)
                     secondStage[0].Abort();
@@ -545,7 +569,7 @@ namespace Coach_Display
                 if (active_com[0].IsOpen)
                     active_com[0].Close();
             }
-            if ((PORT_MODE == portState.Second) || (PORT_MODE == portState.Both))
+            if ((Form3.PORT_MODE == portState.Second) || (Form3.PORT_MODE == portState.Both))
             {
                 if (secondStage[1].IsAlive)
                     secondStage[1].Abort();
@@ -596,7 +620,7 @@ namespace Coach_Display
             zedGraph.GraphPane.Title.FontSpec.Size = 22;
 
             zedGraph.GraphPane.XAxis.Scale.Min = 0;
-            //zedGraph.GraphPane.XAxis.Scale.Max = 5;
+            zedGraph.GraphPane.XAxis.Scale.Max = 2.5;
             zedGraph.GraphPane.YAxis.Scale.Min = -10;
             zedGraph.GraphPane.YAxis.Scale.Max = 10;
 
