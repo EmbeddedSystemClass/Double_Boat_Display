@@ -383,7 +383,7 @@
             this.parametersToolStrip.Name = "parametersToolStrip";
             this.parametersToolStrip.ShowDropDownArrow = false;
             this.parametersToolStrip.Size = new System.Drawing.Size(240, 45);
-            this.parametersToolStrip.Text = "{parameters}";
+            this.parametersToolStrip.Text = "Параметры";
             // 
             // optionsParameter
             // 

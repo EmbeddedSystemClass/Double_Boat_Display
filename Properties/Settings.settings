@@ -3,16 +3,16 @@
   <Profiles />
   <Settings>
     <Setting Name="KeyPoint" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">-3</Value>
+      <Value Profile="(Default)">3</Value>
     </Setting>
     <Setting Name="timePast" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="timeForward" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">180</Value>
+      <Value Profile="(Default)">20</Value>
     </Setting>
-    <Setting Name="initTime" Type="System.Single" Scope="User">
-      <Value Profile="(Default)">5</Value>
+    <Setting Name="initTime" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">30</Value>
     </Setting>
     <Setting Name="mode" Type="System.Byte" Scope="User">
       <Value Profile="(Default)">2</Value>

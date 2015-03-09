@@ -63,3 +63,15 @@ E:\Double Boat Display\obj\x86\Release\Coach_Display.Properties.Resources.resour
 E:\Double Boat Display\obj\x86\Release\Coach_Display.csproj.GenerateResource.Cache
 E:\Double Boat Display\obj\x86\Release\Coach_Display.exe
 E:\Double Boat Display\obj\x86\Release\Coach_Display.pdb
+D:\Projects\Double_Boat_Display\bin\Release\Coach_Display.exe.config
+D:\Projects\Double_Boat_Display\bin\Release\Coach_Display.exe
+D:\Projects\Double_Boat_Display\bin\Release\Coach_Display.pdb
+D:\Projects\Double_Boat_Display\bin\Release\ZedGraph.dll
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.csprojResolveAssemblyReference.cache
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.Form1.resources
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.Form2.resources
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.Form3.resources
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.Properties.Resources.resources
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.csproj.GenerateResource.Cache
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.exe
+D:\Projects\Double_Boat_Display\obj\x86\Release\Coach_Display.pdb

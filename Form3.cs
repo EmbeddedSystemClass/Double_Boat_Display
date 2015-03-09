@@ -16,7 +16,7 @@ namespace Coach_Display
         public static int timePast = 20;
         public static int timeForward = 80;
         //public static double zeroSignal = 0;
-        public static float initTime = 5; // время осреднения ускорения для расчета нулевого значения
+        public static int initTime = 5; // время осреднения ускорения для расчета нулевого значения
         public static Form1.portState PORT_MODE = Form1.portState.First;
 
         public Form3()
@@ -34,11 +34,12 @@ namespace Coach_Display
 
         private void button1_Click(object sender, EventArgs e)
         {
+
             try
             {
                 keyPoint = Convert.ToSingle(textBox1.Text.Replace('.', ','));
                 timePast = Convert.ToInt32(textBox2.Text.Replace('.', ','));
-                initTime = Convert.ToSingle(textBox4.Text.Replace('.', ','));
+                initTime = Convert.ToInt32(textBox4.Text.Replace('.', ','));
                 timeForward = Convert.ToInt32(textBox5.Text.Replace('.', ','));
                 PORT_MODE = (Form1.portState) comboBox1.SelectedItem;
                 Coach_Display.Properties.Settings.Default.KeyPoint = keyPoint;
@@ -65,6 +66,7 @@ namespace Coach_Display
                 }
                 Coach_Display.Properties.Settings.Default.Save();
                 //Form1.true_zero_set = Convert.ToDouble(textBox3.Text.Replace('.', ','));
+
             }
             catch (Exception)
             {
@@ -85,6 +87,38 @@ namespace Coach_Display
             for (int i = 0; i < 4; i++)
                 if ((Form1.portState)comboBox1.Items[i] == PORT_MODE)
                     comboBox1.SelectedIndex = i;
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            keyPoint = 3;
+            timePast = 5;
+            timeForward = 20;
+            initTime = 30; // время осреднения ускорения для расчета нулевого значения
+            PORT_MODE = Form1.portState.First;
+            Coach_Display.Properties.Settings.Default.KeyPoint = keyPoint;
+            Coach_Display.Properties.Settings.Default.timePast = timePast;
+            Coach_Display.Properties.Settings.Default.timeForward = timeForward;
+            Coach_Display.Properties.Settings.Default.initTime = initTime;
+            switch (PORT_MODE)
+            {
+                case Form1.portState.None:
+                    Coach_Display.Properties.Settings.Default.mode = 0;
+                    break;
+                case Form1.portState.First:
+                    Coach_Display.Properties.Settings.Default.mode = 1;
+                    break;
+                case Form1.portState.Second:
+                    Coach_Display.Properties.Settings.Default.mode = 2;
+                    break;
+                case Form1.portState.Both:
+                    Coach_Display.Properties.Settings.Default.mode = 3;
+                    break;
+                default:
+                    Coach_Display.Properties.Settings.Default.mode = 0;
+                    break;
+            }
+            Coach_Display.Properties.Settings.Default.Save();
         }
     }
 }

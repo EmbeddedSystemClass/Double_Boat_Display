@@ -25,7 +25,7 @@ namespace Coach_Display.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("-3")]
+        [global::System.Configuration.DefaultSettingValueAttribute("3")]
         public float KeyPoint {
             get {
                 return ((float)(this["KeyPoint"]));
@@ -49,7 +49,7 @@ namespace Coach_Display.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("180")]
+        [global::System.Configuration.DefaultSettingValueAttribute("20")]
         public int timeForward {
             get {
                 return ((int)(this["timeForward"]));
@@ -61,10 +61,10 @@ namespace Coach_Display.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public float initTime {
+        [global::System.Configuration.DefaultSettingValueAttribute("30")]
+        public int initTime {
             get {
-                return ((float)(this["initTime"]));
+                return ((int)(this["initTime"]));
             }
             set {
                 this["initTime"] = value;

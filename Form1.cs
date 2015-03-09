@@ -34,7 +34,8 @@ namespace Coach_Display
         static volatile byte THREAD_INDEX = 0;
         SerialPort[] active_com = new SerialPort[2];
         public enum portState {None, First, Second, Both}; // режимы работы: без датчика, первый датчик, второй датчик, два датчика
-        Queue<float>[] rawAcceleration = new Queue<float>[2];  // очереди ускорений 
+        Queue<float>[] rawAcceleration = new Queue<float>[2];  // очереди ускорений
+        Queue<int>[] dataSinc = new Queue<int>[2];  // очереди ускорений 
         //static portState PORT_MODE = portState.Second; // выбор режима работы с датчиками
         static string[] comNames = new string[2];
         Thread[] firstStage = new Thread[2]; // чтение с СОМ порта, отображение первичных данных и пополнение очередей ускорений
@@ -119,13 +120,17 @@ namespace Coach_Display
             float[] recMass = new float[20];
             int recCount = 0;
 
-            uint sinc = 0;
+            uint sincNow = 0;
+            uint sincBefore = 0;
             int len = 0;
             byte[] buffer = new byte[read_buffer];
             byte mini_buffer = 0;
             byte[] temp = new byte[4];
 
             float recDistance = 0;
+            int deleteMe = 0;
+            uint[] meToo = new uint[20];
+            float[] party = new float[20];
             
             timer.Start();
             float[] acceleration = new float[20];
@@ -159,25 +164,34 @@ namespace Coach_Display
                                         i = 1;
                                     temp[0] = buffer[24 + i]; temp[1] = buffer[25 + i]; temp[2] = buffer[26 + i]; temp[3] = buffer[27 + i];
                                     acceleration[0] = BitConverter.ToSingle(temp,0) * 9.8F; //ускорения
-                                    rawAcceleration[index].Enqueue(acceleration[0]); //ускорения
+                                    
                                 //}
                                     temp[0] = buffer[28 + i]; temp[1] = buffer[29 + i]; temp[2] = buffer[30 + i]; temp[3] = buffer[31 + i];
                                     acceleration[1] = BitConverter.ToSingle(temp, 0); //угловая скорость
                                 
-                                sinc = BitConverter.ToUInt32(buffer, 32 + i);
-                                speedBox[0].Invoke(new Action(() => speedBox[0].Text =
-                                         sinc.ToString()));
-                                speedBox[1].Invoke(new Action(() => speedBox[1].Text =
-                                        String.Format("{0,6:0.00}", acceleration[0])));
-                                tempBox[1].Invoke(new Action(() => tempBox[1].Text =
-                                        String.Format("{0,6:0.00}", acceleration[1])));
+                                sincNow = BitConverter.ToUInt32(buffer, 32 + i);
+
+                                if (sincNow - sincBefore > 1000)
+                                    sincBefore = sincNow;
+                                if (sincNow - sincBefore > 0)
+                                {
+                                    rawAcceleration[index].Enqueue(acceleration[0]); //ускорения
+                                    dataSinc[index].Enqueue((int)(sincNow - sincBefore));
+                                    sincBefore = sincNow;
+                                }
+                                //speedBox[0].Invoke(new Action(() => speedBox[0].Text =
+                                //         sincNow.ToString()));
+                                //speedBox[1].Invoke(new Action(() => speedBox[1].Text =
+                                //        String.Format("{0,6:0.00}", acceleration[0])));
+                                //tempBox[1].Invoke(new Action(() => tempBox[1].Text =
+                                //        String.Format("{0,6:0.00}", acceleration[1])));
                                 // Искуственное введение скорости для тестирования без GPS
                                 //buffer[0] = (byte)DateTime.Now.Second;
                                 //label10.Invoke(new Action(() => label10.Text = (buffer[0] / 10F).ToString()));
                                 if ((!pauseButton.Checked))
                                 {
-                                    //speedBox[index].Invoke(new Action(() => speedBox[index].Text =
-                                    //    String.Format("{0,5:0.0}", speedNow * 3.6F / 10F))); // скорость в км/ч
+                                    speedBox[index].Invoke(new Action(() => speedBox[index].Text =
+                                        String.Format("{0,5:0.0}", speedNow * 3.6F / 10F))); // скорость в км/ч
                                 } // if (!pauseButton.Checked)
 
                                 # region table block
@@ -279,8 +293,8 @@ namespace Coach_Display
             int baseTimer = 9001; // счетчик времени опорной фазы
             float speedIncr = 0; // прирост скорости на текущем гребке
             List<float> intSpeed = new List<float>(); // прирост скорости на последних 5 гребках
-            int updateRate = 25; // период обновления графика (период 4 = частота 100/4 = частота 25 Гц) 
-
+            int updateRate = 1; // период обновления графика (период 4 = частота 100/4 = частота 25 Гц) 
+            int sincTime = 0;
 
             bool start_found = false;
             int line_flag = 0;
@@ -289,42 +303,43 @@ namespace Coach_Display
             {
                 while (true)
                 {
-                    if (rawAcceleration[index].Count > 0)
+                    if ((rawAcceleration[index].Count > 0)&&(dataSinc[index].Count > 0))
                     {
                         if ((miniAcc.Count > 4))
                             miniAcc.RemoveAt(0);
                         dispAcc = rawAcceleration[index].Dequeue() - zeroSignal;
+                        sincTime = dataSinc[index].Dequeue();
                         //if (dispAcc == zeroSignal)
                         //    dispAcc = miniAcc[miniAcc.Count - 1];
-                        if ((Math.Abs(dispAcc) >= 20) || (Math.Abs(dispAcc) <= 0.01))
-                            dispAcc = 0;
+                        if ((Math.Abs(dispAcc) >= 20) && (miniAcc.Count > 0))
+                            dispAcc = miniAcc[miniAcc.Count - 1];
                         
                         miniAcc.Add(dispAcc);
                         if (baseTimer > 9000)
                         {
-                            tempZeroSignal += dispAcc / (Form3.initTime*100F);
+                            tempZeroSignal += dispAcc / (Form3.initTime);
                             baseTimer++;
                             Add_to_static_graph(time, dispAcc, index);
-                            time += 0.01F;
+                            time += sincTime/1000F;
                             
                             if ((!pauseButton.Checked) && (baseTimer % updateRate == 0))
                             {
                                 redraw_graph();
                             }
-                            if (baseTimer % 3000 == 0)
-                            {
-                                StaticCurve[index].Clear();
-                                time = 0;
-                            }
-                            //if (baseTimer >= 9000 + Form3.initTime*100F)
+                            //if (baseTimer % 300 == 0)
                             //{
-                            //    zedGraph.GraphPane.XAxis.Scale.Max = 2;
                             //    StaticCurve[index].Clear();
-                            //    baseTimer = 0;
                             //    time = 0;
-                            //    zeroSignal = tempZeroSignal;
-                            //    System.Media.SystemSounds.Asterisk.Play();
                             //}
+                            if (baseTimer >= 9000 + Form3.initTime)
+                            {
+                                zedGraph.GraphPane.XAxis.Scale.Max = 2;
+                                StaticCurve[index].Clear();
+                                baseTimer = 0;
+                                time = 0;
+                                zeroSignal = tempZeroSignal;
+                                System.Media.SystemSounds.Asterisk.Play();
+                            }
                         } // if (baseTimer > 9000)
                         else
                         {
@@ -336,102 +351,103 @@ namespace Coach_Display
                                 dispAcc += miniAcc[i] / 3;
 
                             #region concept 
-                            //accTimer++;
-                            //if ((calcAcc <= keyPoint) && (oldAcc[oldAcc.Count - 1] >= keyPoint) && (accTimer >= newLen))
-                            //{
-                            //    StaticCurve[index].Clear();
-                            //    time = 0;
-
-                            //    if (intSpeed.Count > 4) // 5 to be exact
-                            //        intSpeed.RemoveAt(0);
-                            //    intSpeed.Add(speedIncr);
-                            //    baseCounting = true;
-
-                            //    if (!pauseButton.Checked)
-                            //    {
-                            //        tempBox[index].Invoke(new Action(() => tempBox[index].Text =
-                            //            String.Format("{0,5:0.0}", 60F / (float)((accTimer + oldLen) / 100F)))); // темп
-                            //        //baseTimeBox[index].Invoke(new Action(() => baseTimeBox[index].Text =
-                            //        //    String.Format("{0,5:0.00}", (baseTimer) / 100F))); // время опорной фазы (только положительные ускорения)
-                            //        //baseMovementBox[index].Invoke(new Action(() => baseMovementBox[index].Text =
-                            //        //    String.Format("{0,5:0.00}", speedIncr * ((baseTimer) / 100F)))); // прокат
-                            //        //speedIncrBox1[index].Invoke(new Action(() => speedIncrBox1[index].Text =
-                            //        //    String.Format("{0,5:0.0}", speedIncr))); // прирост скорости на текущем гребке
-
-                            //        //if (intSpeed.Count > 4) // 5 to be exact
-                            //        //{
-                            //        //    speedIncr = 0;
-                            //        //    for (int r = 0; r < 5; r++)
-                            //        //        speedIncr += intSpeed[r] / 5;
-                            //        //    speedIncrBox2[index].Invoke(new Action(() => speedIncrBox2[index].Text =
-                            //        //        String.Format("{0,5:0.0}", speedIncr))); // средний прирост скорости
-                            //        //}
-                            //    } // if (!pauseButton.Checked)
-                            //    accTimer = 0;
-                            //    baseTimer = 0;
-                            //    speedIncr = 0;
-
-                            //    for (int j = 0; j < oldLen; j++)
-                            //    {
-                            //            Add_to_static_graph(time, oldAcc[j], index);
-                            //            time += 0.01F;
-                            //        if (oldAcc[j] > 0)
-                            //        {
-                            //            speedIncr += oldAcc[j] * 0.01F;
-                            //            baseTimer++;
-                            //        }
-                            //    } // for (int j = 0; j < oldLen; j++)
-                            //    //if ((!pauseButton.Checked))
-                            //    //    redraw_graph();
-                            //} // if ((calcAcc >= keyPoint) && (oldAcc[oldAcc.Count - 1] <= keyPoint) && (accTimer >= newLen))
-                            //if (accTimer < newLen)
-                            //{
-                            //    Add_to_static_graph(time, dispAcc, index);
-                            //    time += 0.01F;
-                            //    if ((baseCounting) && (calcAcc > 0))
-                            //    {
-                            //        baseTimer++;
-                            //        speedIncr += calcAcc * 0.01F;
-                            //    }
-                            //    if ((calcAcc <= keyPoint) && (oldAcc[oldAcc.Count - 1] >= keyPoint))
-                            //        baseCounting = false;
-                            //} // if (accTimer < newLen)
-                            //accTimer++;
-
-                            //if (oldAcc.Count > oldLen - 1)
-                            //    oldAcc.RemoveAt(0);
-                            //oldAcc.Add(calcAcc);
-                            //if ((!pauseButton.Checked) && (accTimer % updateRate == 0))
-                            //    redraw_graph();
-                            ////Redraw_one_area(time, dispAcc);
-                            ////
-                            #endregion
-
-                            start_found = false;
-
-                            if ((calcAcc <= -3) && (oldAcc[oldAcc.Count - 1] >= -3) && (accTimer >= newLen))
+                            if ((calcAcc <= keyPoint) && (oldAcc[oldAcc.Count - 1] >= keyPoint) && (accTimer >= newLen))
                             {
-                                start_found = true;
-                                accTimer = 0;
-                                //stop_point = i;
-                                line_flag++;
-                                if (line_flag > 1)
-                                    line_flag = 0;
-                                StaticCurve[line_flag].Clear();
+                                StaticCurve[index].Clear();
                                 time = 0;
-                                Change_color(line_flag);
-                            }
+
+                                if (intSpeed.Count > 4) // 5 to be exact
+                                    intSpeed.RemoveAt(0);
+                                intSpeed.Add(speedIncr);
+                                baseCounting = true;
+
+                                if (!pauseButton.Checked)
+                                {
+                                    // Без постоянной частоты данных нельзя посчитать темп
+                                    //tempBox[index].Invoke(new Action(() => tempBox[index].Text =
+                                    //    String.Format("{0,5:0.0}", 60F / (float)((accTimer + oldLen) / 100F)))); // темп
+                                    //baseTimeBox[index].Invoke(new Action(() => baseTimeBox[index].Text =
+                                    //    String.Format("{0,5:0.00}", (baseTimer) / 100F))); // время опорной фазы (только положительные ускорения)
+                                    //baseMovementBox[index].Invoke(new Action(() => baseMovementBox[index].Text =
+                                    //    String.Format("{0,5:0.00}", speedIncr * ((baseTimer) / 100F)))); // прокат
+                                    //speedIncrBox1[index].Invoke(new Action(() => speedIncrBox1[index].Text =
+                                    //    String.Format("{0,5:0.0}", speedIncr))); // прирост скорости на текущем гребке
+
+                                    //if (intSpeed.Count > 4) // 5 to be exact
+                                    //{
+                                    //    speedIncr = 0;
+                                    //    for (int r = 0; r < 5; r++)
+                                    //        speedIncr += intSpeed[r] / 5;
+                                    //    speedIncrBox2[index].Invoke(new Action(() => speedIncrBox2[index].Text =
+                                    //        String.Format("{0,5:0.0}", speedIncr))); // средний прирост скорости
+                                    //}
+                                } // if (!pauseButton.Checked)
+                                accTimer = 0;
+                                baseTimer = 0;
+                                speedIncr = 0;
+
+                                for (int j = 0; j < oldLen; j++)
+                                {
+                                    Add_to_static_graph(time, oldAcc[j], index);
+                                    time += sincTime/100F;
+                                    if (oldAcc[j] > 0)
+                                    {
+                                        speedIncr += oldAcc[j] * 0.15F; // ~ 6 Hz
+                                        baseTimer++;
+                                    }
+                                } // for (int j = 0; j < oldLen; j++)
+                                //if ((!pauseButton.Checked))
+                                //    redraw_graph();
+                            } // if ((calcAcc >= keyPoint) && (oldAcc[oldAcc.Count - 1] <= keyPoint) && (accTimer >= newLen))
+                            if (accTimer < newLen)
+                            {
+                                Add_to_static_graph(time, dispAcc, index);
+                                time += sincTime/1000F;
+                                if ((baseCounting) && (calcAcc > 0))
+                                {
+                                    baseTimer++;
+                                    speedIncr += calcAcc * 0.15F; // ~ 6 Hz
+                                }
+                                if ((calcAcc <= keyPoint) && (oldAcc[oldAcc.Count - 1] >= keyPoint))
+                                    baseCounting = false;
+                            } // if (accTimer < newLen)
                             accTimer++;
-                            Add_to_static_graph(time, dispAcc, line_flag);
-                            time += 0.01F;
+
                             if (oldAcc.Count > oldLen - 1)
                                 oldAcc.RemoveAt(0);
                             oldAcc.Add(calcAcc);
-                           
-                            if ((!pauseButton.Checked)&&(accTimer % updateRate == 0))
+                            if ((!pauseButton.Checked) && (accTimer % updateRate == 0))
                                 redraw_graph();
+                            //Redraw_one_area(time, dispAcc);
+                            #endregion
+
+                            #region boat
+                            //start_found = false;
+                            //if ((calcAcc <= keyPoint) && (oldAcc[oldAcc.Count - 1] >= keyPoint) && (accTimer >= newLen))
+                            //{
+                            //    start_found = true;
+                            //    accTimer = 0;
+                            //    //stop_point = i;
+                            //    line_flag++;
+                            //    if (line_flag > 1)
+                            //        line_flag = 0;
+                            //    StaticCurve[line_flag].Clear();
+                            //    time = 0;
+                            //    Change_color(line_flag);
+                            //}
+                            //accTimer++;
+                            //Add_to_static_graph(time, dispAcc, line_flag);
+                            //time += sincTime/1000F;
+                            //if (oldAcc.Count > oldLen - 1)
+                            //    oldAcc.RemoveAt(0);
+                            //oldAcc.Add(calcAcc);
+                           
+                            //if ((!pauseButton.Checked)&&(accTimer % updateRate == 0))
+                            //    redraw_graph();
                                 //Redraw_one_area(time, dispAcc);
                                 //
+                            #endregion
+
                         } // if (baseTimer > 9000) else
                     } // (rawAcceleration[index].Count > 0)
                 } // while(true)
@@ -456,7 +472,7 @@ namespace Coach_Display
 
         
 
-        private void com_search()
+        public void com_search()
         {
             string[] ports = SerialPort.GetPortNames();
             ToolStripMenuItem menuItem;
@@ -513,7 +529,7 @@ namespace Coach_Display
             Connect();
         }
 
-        private bool Connect()
+        public bool Connect()
         {
             active_com[0] = new SerialPort();
             active_com[1] = new SerialPort();
@@ -555,11 +571,12 @@ namespace Coach_Display
                 richTextBox1.ForeColor = Color.Green;
 
                 rawAcceleration[0] = new Queue<float>();
+                dataSinc[0] = new Queue<int>();
 
                 firstStage[0] = new Thread(stageOneThread);
                 firstStage[0].Start();
 
-                Thread.Sleep(500);
+                Thread.Sleep(100);
                 secondStage[0] = new Thread(stageTwoThread);
                 secondStage[0].Start();
             }
@@ -570,18 +587,19 @@ namespace Coach_Display
                 richTextBox1.ForeColor = Color.Green;
 
                 rawAcceleration[1] = new Queue<float>();
+                dataSinc[1] = new Queue<int>();
 
                 firstStage[1] = new Thread(stageOneThread);
                 firstStage[1].Start();
 
-                Thread.Sleep(500);
+                Thread.Sleep(100);
                 secondStage[1] = new Thread(stageTwoThread);
                 secondStage[1].Start();
             }
             return true;
         } // private bool Connect()
 
-        private void Disconnect()
+        public void Disconnect()
         {
             if ((Form3.PORT_MODE == portState.First) || (Form3.PORT_MODE == portState.Both))
             {
@@ -796,6 +814,7 @@ namespace Coach_Display
         private void optionsParameter_Click(object sender, EventArgs e)
         {
             Form3 optionsChange = new Form3(zero_set, time_set / 100, true_zero_set);
+            optionsChange.Owner = this;
             optionsChange.ShowDialog();
         }
 
